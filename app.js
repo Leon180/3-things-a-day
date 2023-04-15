@@ -11,7 +11,7 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('./config/passport')
 const { getUser } = require('./helpers/auth-helpers')
-const { apis } = require('./routes')
+const { apis, pages } = require('./routes')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,15 +21,17 @@ Handlebars.registerHelper('raw', function (options) {
 });
 
 app.engine('hbs', handlebars({
-  extname: '.hbs',
-  partialsDir: ['views/partials']
-}));
+  extname: 'hbs',
+  defaultLayout: 'main',
+}))
 app.set('view engine', 'hbs')
+app.set('views', './views');
 app.use(express.static('public'));
 
+
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true }))
-app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
@@ -43,7 +45,7 @@ app.use((req, res, next) => {
 })
 
 app.use(apis)
-// app.use(pages)
+app.use(pages)
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 

@@ -7,7 +7,7 @@ const userServices = {
     try {
       const userData = req.user.toJSON()
       delete userData.password
-      const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '30d' }) // 簽發 JWT，效期為 30 天
+      const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '30d' }) // 30 days token
       return cb(null, null, token)
     } catch (err) {
       cb(err)

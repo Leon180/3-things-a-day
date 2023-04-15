@@ -1,0 +1,30 @@
+<div class="sign-up d-flex flex-column align-items-center mx-auto mt-5">
+  <h3 class="mt-5">Sign Up</h3>
+  <form class="p-4" action="/api/signup" method="POST">
+    <div class="form-floating mb-3">
+      <input type="text" name="name" class="form-control" id="floatingInputName" placeholder="Name (optional)">
+      <label for="floatingInputName">name (optional)</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control" id="floatingInputEmail" value="{{value.email}}" name="email"
+        placeholder="Email">
+      <label for="floatingInputEmail">email</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="floatingInputPassword" value="" name="password"
+        placeholder="Password">
+      <label for="floatingInputPassword">password</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="floatingInputPasswordCheck" value="" name="passwordCheck"
+        placeholder="Password check">
+      <label for="floatingInputPasswordCheck">password confirm</label>
+    </div>
+    <div class="d-flex justify-content-center">
+      <button type="button" class="btn btn-primary" style="width: 100%;">submit</button>
+    </div>
+  </form>
+  <div class="footer">
+    <a href="/signin" class="btn" style="text-decoration: underline">go to sign in page if already has an account!</a>
+  </div>
+</div>
