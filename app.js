@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const handlebars = require('express-handlebars')
 const Handlebars = require('handlebars')
 const methodOverride = require('method-override')
@@ -30,6 +31,7 @@ app.use(express.static('public'));
 
 
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true }))
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(passport.initialize())

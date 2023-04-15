@@ -15,10 +15,10 @@ const userServices = {
   },
   signUp: async (req, cb) => {
     try {
-      // incorrect confirm password
-      if (req.body.password !== req.body.passwordCheck) return cb(null, { code: 400, message: 'password do not match' }, null)
       // missing email or password
       if (!req.body.email || !req.body.password) return cb(null, { code: 400, message: 'email and password are required' }, null)
+      // incorrect confirm password
+      if (req.body.password !== req.body.passwordCheck) return cb(null, { code: 400, message: 'password, password confirm do not match' }, null)
       const hash = await bcrypt.hash(req.body.password, 10)
       const [user, created] = await User.findOrCreate({
         where: { email: req.body.email },
@@ -29,7 +29,9 @@ const userServices = {
         }
       })
       if (!created) return cb(null, { code: 400, message: 'email already exists' }, null)
-      return cb(null, null, user.toJSON())
+      const userJson = user.toJSON()
+      delete userJson.password
+      return cb(null, null, userJson)
     } catch (err) {
       cb(err)
     }

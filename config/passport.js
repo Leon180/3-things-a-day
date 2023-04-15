@@ -15,9 +15,10 @@ const userField = {
 const authenticater = (req, email, password, cb) => {
   User.findOne({ where: { email } })
     .then(user => {
-      if (!user) return cb(null, false, req.flash('error_messages', "email doesn't exist！"))
+      console.log(user)
+      if (!user) return cb("Incorrect email or password")
       bcrypt.compare(password, user.password).then(res => {
-        if (!res) return cb(null, false, req.flash('error_messages', 'account or password incorrect！'))
+        if (!res) return cb("Incorrect email or password")
         return cb(null, user)
       })
     })

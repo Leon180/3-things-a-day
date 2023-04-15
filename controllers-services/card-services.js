@@ -24,7 +24,7 @@ const cardServices = {
         nest: true
       })
       if (!card) return cb(null, {
-        code: 400,
+        status: 400,
         message: "incorrect card id, card doesn't exist"
       })
       return cb(null, null, {
