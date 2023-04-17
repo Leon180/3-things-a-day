@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken')
-
 const getUser = req => {
   return req.user || null
 }

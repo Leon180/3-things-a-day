@@ -1,4 +1,7 @@
 'use strict';
+const dayjs = require('dayjs')
+var utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -13,15 +16,14 @@ module.exports = {
     const fields = usersId.map(user => {
       return Array.from({ length: 7 }, (v, i) => {
         // generate 7 days
-        const today = new Date()
-        const date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() - i, 23, 0, 0, 0))
+        const today = dayjs()
         return {
           userId: user.id,
-          year: today.getFullYear(),
-          month: today.getMonth() + 1,
-          day: today.getDate(),
-          createdAt: date,
-          updatedAt: date
+          year: today.year(),
+          month: today.month() + 1,
+          day: today.date() - i,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         }
       })
     }).flat()

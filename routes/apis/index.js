@@ -5,12 +5,14 @@ const { apiErrorHandler } = require('../../middleware/error-handler')
 const { errorResponse } = require('../../helpers/response-helpers')
 const cardController = require('../../controllers/apis/card-controller')
 const userController = require('../../controllers/apis/user-controller')
+const dateController = require('../../controllers/apis/date-controller')
 
 const lackPasswordOrEmailMessage = {
-    code: 400,
+    status: 400,
     message: 'lack password or email'
 }
 
+router.get('/api/date', passport.authenticate('token', { session: false }), dateController.get)
 router.get('/api/card/:id', passport.authenticate('token', { session: false }), cardController.get)
 // router.get('/api/card', cardController.get)
 router.post('/api/card', passport.authenticate('token', { session: false }), cardController.post)

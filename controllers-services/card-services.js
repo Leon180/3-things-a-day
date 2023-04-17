@@ -3,6 +3,7 @@ const types = ['sport', 'book', 'relax']
 const textlimit = { 'title': 20, 'record': 200 }
 const timeReg = /(2[0-3]|1\d|0\d):([1-5]\d|0\d):00/
 const helpers = require('../helpers/auth-helpers')
+const dayjs = require('dayjs')
 
 const cardServices = {
   // find a card by id
@@ -10,16 +11,16 @@ const cardServices = {
   get: async (req, cb) => {
     try {
       const card = await models.Card.findByPk(req.params.id, {
-        include: [
-          {
-            model: models.Date,
-            attributes: ['id', 'year', 'month', 'day'],
-          },
-          {
-            model: models.User,
-            attributes: ['id', 'name', 'email']
-          }
-        ],
+        // include: [
+        //   {
+        //     model: models.Date,
+        //     attributes: ['id', 'year', 'month', 'day'],
+        //   },
+        //   {
+        //     model: models.User,
+        //     attributes: ['id', 'name', 'email']
+        //   }
+        // ],
         raw: true,
         nest: true
       })
@@ -55,7 +56,7 @@ const cardServices = {
         nest: true
       })
       if (!card) return cb(null, {
-        code: 400,
+        status: 400,
         message: "incorrect card id, card doesn't exist"
       })
       return cb(null, null, {
@@ -75,22 +76,27 @@ const cardServices = {
       const status = checkCardInput(req)
       if (status) return cb(null, status, null)
       const userId = helpers.getUser(req).id
-      const today = new Date()
+      const today = dayjs()
+      const searchCondition = {
+        year: today.year(),
+        month: today.month() + 1,
+        day: today.date()
+      }
       const count = await models.Date.count({
-        where: { year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() }
+        where: searchCondition
       })
       if (count >= 3) return cb(null, {
-        code: 400,
+        status: 400,
         message: "you can only submit 3 cards per day"
       })
       const date = await models.Date.create({
         userId,
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-        day: today.getDate()
+        year: today.year(),
+        month: today.month() + 1,
+        day: today.date()
       })
       if (!date) cb(null, {
-        code: 500,
+        status: 500,
         message: "date create failed"
       }, null)
       const create = await models.Card.create({
@@ -99,7 +105,7 @@ const cardServices = {
         dateId: date.id
       })
       if (!create) cb(null, {
-        code: 500,
+        status: 500,
         message: "card create failed"
       }, null)
       return cb(null, null, {
@@ -119,7 +125,7 @@ const cardServices = {
       const status = checkCardInput(req)
       if (status) return cb(null, status, null)
       if (!req.params.id) return cb(null, {
-        code: 400,
+        status: 400,
         message: "incorrect data format: id is required"
       }, null)
       const cardId = req.params.id
@@ -129,18 +135,19 @@ const cardServices = {
       }, null)
       const check = Number(helpers.getUser(req).id) === Number(card.userId) ? true : false
       if (!check) return cb(null, {
-        code: 400,
+        status: 400,
         message: 'permission denied: you can only update your own card'
       }, null)
-      if (card.createdAt.getDate() !== new Date().getDate()) return cb(null, {
-        code: 400,
+      const today = dayjs()
+      if (dayjs(card.createdAt).date() !== today.date()) return cb(null, {
+        status: 400,
         message: "card can only be updated on the same day"
       }, null)
       const cardUpdate = await card.update({
         ...req.body
       })
       if (!cardUpdate) return cb(null, {
-        code: 500,
+        status: 500,
         message: "update failed"
       }, null)
       return cb(null, null, {
@@ -158,7 +165,7 @@ const cardServices = {
 // For checking the input data
 function checkCardInput(req) {
   const status = {
-    code: 400,
+    status: 400,
     message: ""
   }
   if (!req.body) return {

@@ -38,3 +38,5 @@ function showErrorMessage(errorDiv, message, display = "block", duration = 1000)
     errorDiv.textContent = ""
   }, 5000)
 }
+
+

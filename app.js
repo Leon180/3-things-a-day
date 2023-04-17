@@ -8,9 +8,7 @@ const cookieParser = require('cookie-parser')
 const handlebars = require('express-handlebars')
 const Handlebars = require('handlebars')
 const methodOverride = require('method-override')
-const session = require('express-session')
-const flash = require('connect-flash')
-const passport = require('./config/passport')
+const { setReqUser } = require('./middleware/auth')
 const { getUser } = require('./helpers/auth-helpers')
 const { apis, pages } = require('./routes')
 
@@ -27,22 +25,15 @@ app.engine('hbs', handlebars({
 }))
 app.set('view engine', 'hbs')
 app.set('views', './views');
-app.use(express.static('public'));
-
-
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: true }))
-app.use(cookieParser())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 app.use(express.json())
-app.use(passport.initialize())
-app.use(passport.session())
-app.use(flash())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser(process.env.SESSION_SECRET))
 app.use(methodOverride('_method'))
-// for handlebars
+app.use(setReqUser)
 app.use((req, res, next) => {
-  res.locals.success_messages = req.flash('success_messages')
-  res.locals.error_messages = req.flash('error_messages')
   res.locals.user = getUser(req)
+  console.log('res.locals.user', res.locals.user)
   next()
 })
 

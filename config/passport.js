@@ -4,7 +4,8 @@ const passportJWT = require('passport-jwt')
 const JWTStrategy = passportJWT.Strategy
 const ExtractJWT = passportJWT.ExtractJwt
 const bcrypt = require('bcryptjs')
-const { User, Card, Date } = require('../models')
+const models = require('../models')
+const dayjs = require('dayjs')
 
 // customize signin strategy
 const userField = {
@@ -13,9 +14,8 @@ const userField = {
   passReqToCallback: true
 }
 const authenticater = (req, email, password, cb) => {
-  User.findOne({ where: { email } })
+  models.User.findOne({ where: { email } })
     .then(user => {
-      console.log(user)
       if (!user) return cb("Incorrect email or password")
       bcrypt.compare(password, user.password).then(res => {
         if (!res) return cb("Incorrect email or password")
@@ -28,33 +28,34 @@ passport.use('signin', new LocalStrategy(userField, authenticater))
 // set up Passport JWT strategy
 const jwtOptions = {
   secretOrKey: process.env.JWT_SECRET,
-  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
 }
 passport.use('token', new JWTStrategy(jwtOptions, (jwtPayload, cb) => {
-  User.findByPk(jwtPayload.id, {
-    include: [
-      { model: Card },
-      { model: Date }
-    ]
-  })
-    .then(user => cb(null, user))
+  models.User.findByPk(jwtPayload.id)
+    .then(user => {
+      cb(null, user)
+    })
     .catch(err => cb(err))
 }))
 // serialize and deserialize user
 passport.serializeUser((user, cb) => {
   cb(null, user.id)
 })
-passport.deserializeUser(async (id, cb) => {
-  try {
-    const user = await User.findByPk(id, {
-      include: [
-        { model: Card },
-        { model: Date }
-      ]
-    })
-    return cb(null, user.toJSON() || user)
-  } catch (err) {
-    cb(err)
+passport.deserializeUser((id, cb) => {
+  const today = dayjs()
+  const searchCondition = {
+    year: today.year(),
+    month: today.month() + 1,
+    day: today.date()
   }
+  return models.User.findByPk(id, {
+    include: [
+      { model: models.Date, where: searchCondition }
+    ]
+  })
+    .then(user => cb(null, user.toJSON() || user))
+    .catch(err => {
+      cb(err)
+    })
 })
 module.exports = passport
