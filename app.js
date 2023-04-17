@@ -33,7 +33,6 @@ app.use(methodOverride('_method'))
 app.use(setReqUser)
 app.use((req, res, next) => {
   res.locals.user = getUser(req)
-  console.log('res.locals.user', res.locals.user)
   next()
 })
 

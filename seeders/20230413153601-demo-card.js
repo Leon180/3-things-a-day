@@ -20,8 +20,6 @@ module.exports = {
     )
     // Create card array
     const fields = dates.map(date => {
-      const userId = date.id
-      const day = dayjs(date)
       return Array.from({ length: 3 }, (v, i) => {
         const stamp1 = new Date(date.year, date.month - 1, date.day, 17 + (i * 2), 0)
         const stamp2 = new Date(date.year, date.month - 1, date.day, 19 + (i * 2), 0)
@@ -32,13 +30,13 @@ module.exports = {
           end = (end - start) < range ? dayjs(start + range) : dayjs(end)
         }
         return {
-          userId,
+          userId: date.userId,
           dateId: date.id,
           title: faker.lorem.word({ length: { min: 3, max: 12 } }),
           type: faker.helpers.arrayElement(['sport', 'book', 'relax']),
           start: `${dayjs(start).hour()}:${dayjs(start).minute()}`,
           end: `${dayjs(end).hour()}:${dayjs(end).minute()}`,
-          record: faker.lorem.paragraph(2),
+          record: faker.lorem.paragraph(2).slice(0, 200),
           createdAt: new Date(),
           updatedAt: new Date()
         }

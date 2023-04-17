@@ -1,7 +1,7 @@
 const models = require('../models')
 const types = ['sport', 'book', 'relax']
 const textlimit = { 'title': 20, 'record': 200 }
-const timeReg = /(2[0-3]|1\d|0\d):([1-5]\d|0\d):00/
+const timeReg = /(2[0-3]|1\d|0\d):([1-5]\d|0\d)/
 const helpers = require('../helpers/auth-helpers')
 const dayjs = require('dayjs')
 
@@ -9,37 +9,6 @@ const cardServices = {
   // find a card by id
   // card {} include date {'id', 'year', 'month', 'day'} and user {'id', 'name', 'email'}
   get: async (req, cb) => {
-    try {
-      const card = await models.Card.findByPk(req.params.id, {
-        // include: [
-        //   {
-        //     model: models.Date,
-        //     attributes: ['id', 'year', 'month', 'day'],
-        //   },
-        //   {
-        //     model: models.User,
-        //     attributes: ['id', 'name', 'email']
-        //   }
-        // ],
-        raw: true,
-        nest: true
-      })
-      if (!card) return cb(null, {
-        status: 400,
-        message: "incorrect card id, card doesn't exist"
-      })
-      return cb(null, null, {
-        status: "200",
-        message: "card found",
-        data: card
-      })
-    } catch (err) {
-      cb(err)
-    }
-  },
-  // find a card by id
-  // card {} include date {'id', 'year', 'month', 'day'} and user {'id', 'name', 'email'}
-  getByFilter: async (req, cb) => {
     try {
       const card = await models.Card.findByPk(req.params.id, {
         include: [
@@ -68,6 +37,35 @@ const cardServices = {
       cb(err)
     }
   },
+  // getByFilter: async (req, cb) => {
+  //   try {
+  //     const card = await models.Card.findByPk(req.params.id, {
+  //       include: [
+  //         {
+  //           model: models.Date,
+  //           attributes: ['id', 'year', 'month', 'day'],
+  //         },
+  //         {
+  //           model: models.User,
+  //           attributes: ['id', 'name', 'email']
+  //         }
+  //       ],
+  //       raw: true,
+  //       nest: true
+  //     })
+  //     if (!card) return cb(null, {
+  //       status: 400,
+  //       message: "incorrect card id, card doesn't exist"
+  //     })
+  //     return cb(null, null, {
+  //       status: "200",
+  //       message: "card found",
+  //       data: card
+  //     })
+  //   } catch (err) {
+  //     cb(err)
+  //   }
+  // },
   // create a card
   // if already submit 3 cards today, return error
   // will also create the Date
@@ -78,27 +76,27 @@ const cardServices = {
       const userId = helpers.getUser(req).id
       const today = dayjs()
       const searchCondition = {
-        year: today.year(),
-        month: today.month() + 1,
-        day: today.date()
-      }
-      const count = await models.Date.count({
-        where: searchCondition
-      })
-      if (count >= 3) return cb(null, {
-        status: 400,
-        message: "you can only submit 3 cards per day"
-      })
-      const date = await models.Date.create({
         userId,
         year: today.year(),
         month: today.month() + 1,
         day: today.date()
+      }
+      const [date, created] = await models.Date.findOrCreate({
+        where: searchCondition
       })
       if (!date) cb(null, {
         status: 500,
         message: "date create failed"
       }, null)
+      if (!created) {
+        const count = await models.Card.count({
+          where: { dateId: date.id }
+        })
+        if (count >= 3) return cb(null, {
+          status: 400,
+          message: "you can only submit 3 cards per day"
+        })
+      }
       const create = await models.Card.create({
         ...req.body,
         userId,
@@ -187,7 +185,7 @@ function checkCardInput(req) {
   }
   if (!timeReg.test(start) || !timeReg.test(end)) return {
     ...status,
-    message: "incorrect data format: start and end must be in HH:mm:ss format"
+    message: "incorrect data format: start and end must be in HH:mm or HH:mm:ss format"
   }
   if (start >= end) return {
     ...status,
