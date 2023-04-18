@@ -14,10 +14,8 @@ const setReqUser = async (req, res, next) => {
       month: today.month() + 1,
       day: today.date()
     }
+    console.log(decoded.id)
     const user = await models.User.findByPk(decoded.id, {
-      include: [
-        { model: models.Date, where: searchCondition }
-      ]
     })
     if (!user) return next()
     req.user = user.toJSON() || user

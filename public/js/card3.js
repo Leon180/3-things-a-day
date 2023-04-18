@@ -42,10 +42,10 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
   returnJson.data.forEach((data) => {
     cards.push(data.Cards)
   })
-  let cardsHTML = ''
+  let cardsHTML = []
   let cardsId = []
   if (cards.length > 0) cards.forEach((card, i) => {
-    cardsHTML += `
+    cardsHTML.push(`
     <div class="col">
       <div class="card ${cardName(editCardClassPrefixName, i)}">
         <div class="card-body">
@@ -90,11 +90,12 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
         </div>
       </div>
     </div>
-    `
+    `)
     cardsId.push(card.id)
   })
-  for (let i = 0; i < 3 - cardsHTML.length; i++) {
-    cardsHTML += `
+  const repeat = 3 - cardsHTML.length
+  for (let i = 0; i < repeat; i++) {
+    cardsHTML.push(`
     <div class="col">
       <div class="card ${cardName(newCardClassPrefixName, i)}">
         <div class="card-body">
@@ -139,9 +140,10 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
         </div>
       </div>
     </div>
-    `
+    `)
   }
-  showCardsArea.innerHTML = cardsHTML
+  const cardsHTMLString = cardsHTML.join(',').replace(/,/g, '')
+  showCardsArea.innerHTML = cardsHTMLString
   for (let i = 0; i < cardsHTML.length; i++) {
     document.querySelector(`.${cardName(editCardClassPrefixName, i)} .btn`)?.addEventListener('click', () => editCard(i, cardsId[i], editCardClassPrefixName, editApiLink, editFetchMethod))
     document.querySelector(`.${cardName(newCardClassPrefixName, i)} .btn`)?.addEventListener('click', () => createCard(i, newCardClassPrefixName, newApiLink, newFetchMethod))

@@ -1,10 +1,25 @@
 const signupButton = document.querySelector('.sign-up-button')
 const errorDiv = document.querySelector('.sign-up .error-message')
 signupButton.addEventListener('click', signUp)
+document.addEventListener("keyup", (e) => {
+  const form = document.querySelector('form') || null
+  if (!form) return
+  const formData = new FormData(form)
+  const data = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    passwordCheck: formData.get('passwordCheck')
+  }
+  if (!data.email && !data.password) return
+  if (e.key === 'Enter') {
+    signUp()
+  }
+})
 
 async function signUp() {
   const form = document.querySelector('form') || null
-  if (!form) return { code: 400, message: 'lack form in webpage' }
+  if (!form) return
   const formData = new FormData(form)
   const data = {
     name: formData.get('name'),

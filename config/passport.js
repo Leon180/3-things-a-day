@@ -49,9 +49,7 @@ passport.deserializeUser((id, cb) => {
     day: today.date()
   }
   return models.User.findByPk(id, {
-    include: [
-      { model: models.Date, where: searchCondition }
-    ]
+
   })
     .then(user => cb(null, user.toJSON() || user))
     .catch(err => {
