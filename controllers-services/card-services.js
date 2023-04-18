@@ -37,35 +37,6 @@ const cardServices = {
       cb(err)
     }
   },
-  // getByFilter: async (req, cb) => {
-  //   try {
-  //     const card = await models.Card.findByPk(req.params.id, {
-  //       include: [
-  //         {
-  //           model: models.Date,
-  //           attributes: ['id', 'year', 'month', 'day'],
-  //         },
-  //         {
-  //           model: models.User,
-  //           attributes: ['id', 'name', 'email']
-  //         }
-  //       ],
-  //       raw: true,
-  //       nest: true
-  //     })
-  //     if (!card) return cb(null, {
-  //       status: 400,
-  //       message: "incorrect card id, card doesn't exist"
-  //     })
-  //     return cb(null, null, {
-  //       status: "200",
-  //       message: "card found",
-  //       data: card
-  //     })
-  //   } catch (err) {
-  //     cb(err)
-  //   }
-  // },
   // create a card
   // if already submit 3 cards today, return error
   // will also create the Date

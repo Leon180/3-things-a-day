@@ -8,6 +8,7 @@ const cardController = require('../../controllers/apis/card-controller')
 const userAPIController = require('../../controllers/apis/user-controller')
 const userController = require('../../controllers/pages/user-controller')
 
+router.get('/record', authenticatedRedirect, (req, res) => res.render('record'))
 router.get('/signout', authenticatedRedirect)
 router.get('/signin', authenticatedRedirectHome, (req, res) => res.render('signin'))
 router.get('/signup', authenticatedRedirectHome, (req, res) => res.render('signup'))
