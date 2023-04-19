@@ -45,12 +45,13 @@ const cardServices = {
       const status = checkCardInput(req)
       if (status) return cb(null, status, null)
       const userId = helpers.getUser(req).id
-      const today = dayjs()
+      // Post today
+      const { year, month, day } = req.query
       const searchCondition = {
         userId,
-        year: today.year(),
-        month: today.month() + 1,
-        day: today.date()
+        year,
+        month,
+        day
       }
       const [date, created] = await models.Date.findOrCreate({
         where: searchCondition
@@ -77,6 +78,8 @@ const cardServices = {
         status: 500,
         message: "card create failed"
       }, null)
+      console.log(searchCondition)
+      console.log(create)
       return cb(null, null, {
         status: "200",
         message: "create successfully!",
@@ -98,7 +101,14 @@ const cardServices = {
         message: "incorrect data format: id is required"
       }, null)
       const cardId = req.params.id
-      const card = await models.Card.findByPk(cardId)
+      const card = await models.Card.findByPk(cardId, {
+        include: [
+          {
+            model: models.Date,
+            attributes: ['id', 'year', 'month', 'day'],
+          },
+        ]
+      })
       if (!card) return cb(null, {
         message: "incorrect card id, card doesn't exist"
       }, null)
@@ -107,8 +117,12 @@ const cardServices = {
         status: 400,
         message: 'permission denied: you can only update your own card'
       }, null)
-      const today = dayjs()
-      if (dayjs(card.createdAt).date() !== today.date()) return cb(null, {
+      // Check if today
+      const { year, month, day } = req.query
+      console.log(year, month, day)
+      console.log(card.Date.dataValues)
+      console.log(card.Date.dataValues.year, card.Date.dataValues.month, card.Date.dataValues.day)
+      if (Number(card.Date.dataValues.year) !== Number(year) || Number(card.Date.dataValues.month) !== Number(month) || Number(card.Date.dataValues.day) !== Number(day)) return cb(null, {
         status: 400,
         message: "card can only be updated on the same day"
       }, null)
@@ -119,6 +133,8 @@ const cardServices = {
         status: 500,
         message: "update failed"
       }, null)
+      console.log(req.query)
+      console.log(cardUpdate)
       return cb(null, null, {
         status: "200",
         message: "update successfully",

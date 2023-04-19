@@ -35,7 +35,9 @@ function cardName(prefix, i) {
 }
 
 async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageArea, editCardClassPrefixName, newCardClassPrefixName, editApiLink, newApiLink, editFetchMethod, newFetchMethod) {
-  const returnData = await fetch(apiLink, fetchMethod)
+  const today = dayjs()
+  const todayApiLink = apiLink + `?year=${today.year()}&month=${today.month() + 1}&day=${today.date()}`
+  const returnData = await fetch(todayApiLink, fetchMethod)
   const returnJson = await returnData.json()
   console.log(returnJson)
   if (returnData.status !== 200) return showErrorMessage(errorMessageArea, returnJson.message)
@@ -159,7 +161,9 @@ async function editCard(i, id, editCardClassPrefixName, editApiLink, editFetchMe
   for (const pair of formData.entries()) {
     data[pair[0]] = pair[1]
   }
-  const returnData = await fetch(`${editApiLink}/${id}`, {
+  const today = dayjs()
+  const todayApiLink = editApiLink + `/${id}?year=${today.year()}&month=${today.month() + 1}&day=${today.date()}`
+  const returnData = await fetch(todayApiLink, {
     ...editFetchMethod,
     body: JSON.stringify(data)
   })
@@ -179,7 +183,9 @@ async function createCard(i, newCardClassPrefixName, newApiLink, newFetchMethod)
   for (const pair of formData.entries()) {
     data[pair[0]] = pair[1]
   }
-  const returnData = await fetch(newApiLink, {
+  const today = dayjs()
+  const todayApiLink = newApiLink + `?year=${today.year()}&month=${today.month() + 1}&day=${today.date()}`
+  const returnData = await fetch(todayApiLink, {
     ...newFetchMethod,
     body: JSON.stringify(data)
   })

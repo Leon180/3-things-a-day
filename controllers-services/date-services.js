@@ -17,9 +17,6 @@ const dateServices = {
       if (!year && !month && !day) {
         searchCondition = {
           ...searchCondition,
-          year: dayjs().year(),
-          month: dayjs().month() + 1,
-          day: dayjs().date()
         }
       }
       else if (year && month && day) {
@@ -62,6 +59,7 @@ const dateServices = {
         status: 400,
         message: "date not found"
       })
+      console.log(searchCondition)
       return cb(null, null, date)
     } catch (err) {
       cb(err)
