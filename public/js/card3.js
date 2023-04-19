@@ -37,6 +37,7 @@ function cardName(prefix, i) {
 async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageArea, editCardClassPrefixName, newCardClassPrefixName, editApiLink, newApiLink, editFetchMethod, newFetchMethod) {
   const returnData = await fetch(apiLink, fetchMethod)
   const returnJson = await returnData.json()
+  console.log(returnJson)
   if (returnData.status !== 200) return showErrorMessage(errorMessageArea, returnJson.message)
   const cards = []
   returnJson.data.forEach((data) => {
