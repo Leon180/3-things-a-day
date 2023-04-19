@@ -78,8 +78,6 @@ const cardServices = {
         status: 500,
         message: "card create failed"
       }, null)
-      console.log(searchCondition)
-      console.log(create)
       return cb(null, null, {
         status: "200",
         message: "create successfully!",
@@ -119,9 +117,6 @@ const cardServices = {
       }, null)
       // Check if today
       const { year, month, day } = req.query
-      console.log(year, month, day)
-      console.log(card.Date.dataValues)
-      console.log(card.Date.dataValues.year, card.Date.dataValues.month, card.Date.dataValues.day)
       if (Number(card.Date.dataValues.year) !== Number(year) || Number(card.Date.dataValues.month) !== Number(month) || Number(card.Date.dataValues.day) !== Number(day)) return cb(null, {
         status: 400,
         message: "card can only be updated on the same day"
@@ -133,8 +128,6 @@ const cardServices = {
         status: 500,
         message: "update failed"
       }, null)
-      console.log(req.query)
-      console.log(cardUpdate)
       return cb(null, null, {
         status: "200",
         message: "update successfully",

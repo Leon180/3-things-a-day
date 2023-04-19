@@ -39,7 +39,6 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
   const todayApiLink = apiLink + `?year=${today.year()}&month=${today.month() + 1}&day=${today.date()}`
   const returnData = await fetch(todayApiLink, fetchMethod)
   const returnJson = await returnData.json()
-  console.log(returnJson)
   if (returnData.status !== 200) return showErrorMessage(errorMessageArea, returnJson.message)
   const cards = []
   returnJson.data.forEach((data) => {

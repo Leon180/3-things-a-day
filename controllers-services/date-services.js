@@ -59,7 +59,6 @@ const dateServices = {
         status: 400,
         message: "date not found"
       })
-      console.log(searchCondition)
       return cb(null, null, date)
     } catch (err) {
       cb(err)
