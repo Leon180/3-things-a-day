@@ -46,7 +46,7 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
   let cardsId = []
   if (cards.length > 0) cards.forEach((card, i) => {
     cardsHTML.push(`
-    <div class="col">
+    <div class="col mb-3">
       <div class="card ${cardName(editCardClassPrefixName, i)}">
         <div class="card-body">
           <form id="card" class="form-row mx-2" action="/" method="POST">
@@ -96,7 +96,7 @@ async function getTodayCard(apiLink, fetchMethod, showCardsArea, errorMessageAre
   const repeat = 3 - cardsHTML.length
   for (let i = 0; i < repeat; i++) {
     cardsHTML.push(`
-    <div class="col">
+    <div class="col mb-3">
       <div class="card ${cardName(newCardClassPrefixName, i)}">
         <div class="card-body">
           <form id="card" class="form-row mx-2" action="/" method="POST">
